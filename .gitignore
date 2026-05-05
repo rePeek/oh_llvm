@@ -1,0 +1,26 @@
+# Devenv
+.devenv*
+devenv.local.nix
+devenv.local.yaml
+
+# direnv
+.direnv
+
+# codex
+.codex
+
+# ignore everything
+*
+
+# keep gitignore itself
+!.gitignore
+
+# keep only these files/dirs
+!.envrc
+!devenv.lock
+!devenv.nix
+!devenv.yaml
+!docker-compose.yml
+!justfile
+!docker/
+!docker/**

@@ -1,0 +1,17 @@
+services:
+  ohos-llvm-builder:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.ubuntu22
+    image: ohos-llvm-builder:ubuntu22
+    container_name: ohos-llvm-builder
+    user: "${UID:-1000}:${GID:-1000}"
+    working_dir: /workspace
+    volumes:
+      - ./:/workspace
+    tty: true
+    stdin_open: true
+    environment:
+      - LANG=C.UTF-8
+      - LC_ALL=C.UTF-8
+      - TZ=Etc/UTC

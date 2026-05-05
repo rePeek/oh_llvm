@@ -1,0 +1,37 @@
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
+
+RUN sed -i 's|http://archive.ubuntu.com/ubuntu/|http://mirrors.aliyun.com/ubuntu/|g; s|http://security.ubuntu.com/ubuntu/|http://mirrors.aliyun.com/ubuntu/|g' /etc/apt/sources.list
+
+# Compile-only minimal set from the wiki (Ubuntu 22.04).
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    bash \
+    ca-certificates \
+    ccache \
+    git \
+    python3 \
+    python3-dev \
+    build-essential \
+    swig \
+    libedit-dev \
+    libncurses5-dev \
+    binutils-dev \
+    gcc-multilib \
+    abigail-tools \
+    elfutils \
+    pkg-config \
+    autoconf \
+    autoconf-archive \
+    automake \
+    libtool \
+    libstdc++-11-dev-arm64-cross \
+    rsync \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /workspace
+
+CMD ["bash"]
