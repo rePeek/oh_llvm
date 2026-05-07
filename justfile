@@ -34,9 +34,20 @@ build-ohos:
 ninja-install-linux *targets:
     just ninja-install-in llvm_make {{targets}}
 
+ninja-install-windows *targets:
+    just ninja-install-in windows-x86_64 {{targets}}
+
+ninja-install-ohos *targets:
+    just ninja-install-in ohos-aarch64 {{targets}}
+
+ninja-install-static-lldb:
+    just ninja-install-in lib/lldb-server-aarch64-linux-ohos install-lldb-server
+
 [private]
 ninja-install-in build_dir *targets:
     docker compose run --rm ohos-llvm-builder bash -lc '\
     set -euo pipefail; \
     cd "/workspace/out/{{build_dir}}"; \
-    /workspace/prebuilts/build-tools/linux-x86/bin/ninja install {{targets}}'
+    TARGETS="{{targets}}"; \
+    if [ -z "$TARGETS" ]; then TARGETS=install; fi; \
+    /workspace/prebuilts/build-tools/linux-x86/bin/ninja $TARGETS'
