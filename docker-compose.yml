@@ -3,6 +3,7 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.ubuntu22
+      network: host
     image: ohos-llvm-builder:ubuntu22
     container_name: ohos-llvm-builder
     user: "${UID:-1000}:${GID:-1000}"
@@ -15,3 +16,5 @@ services:
       - LANG=C.UTF-8
       - LC_ALL=C.UTF-8
       - TZ=Etc/UTC
+      - HOME=/workspace
+      - CCACHE_BASE=/workspace
