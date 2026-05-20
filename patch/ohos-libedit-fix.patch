@@ -1,0 +1,33 @@
+diff --git a/cmake/Modules/FindLibEdit.cmake b/cmake/Modules/FindLibEdit.cmake
+index 7e62d4d839ae..eb294cf86731 100644
+--- a/cmake/Modules/FindLibEdit.cmake
++++ b/cmake/Modules/FindLibEdit.cmake
+@@ -24,7 +24,14 @@ if(LibEdit_INCLUDE_DIRS AND EXISTS "${LibEdit_INCLUDE_DIRS}/histedit.h")
+   cmake_push_check_state()
+   list(APPEND CMAKE_REQUIRED_INCLUDES ${LibEdit_INCLUDE_DIRS})
+   list(APPEND CMAKE_REQUIRED_LIBRARIES ${LibEdit_LIBRARIES})
+-  check_include_file(histedit.h HAVE_HISTEDIT_H)
++  if(CMAKE_CROSSCOMPILING)
++    # For cross builds, this compile+link probe often fails because transitive
++    # target link dependencies are not fully available at configure time.
++    # Trust explicit include/library hints instead.
++    set(HAVE_HISTEDIT_H TRUE)
++  else()
++    check_include_file(histedit.h HAVE_HISTEDIT_H)
++  endif()
+   cmake_pop_check_state()
+   if (HAVE_HISTEDIT_H)
+     file(STRINGS "${LibEdit_INCLUDE_DIRS}/histedit.h"
+diff --git a/llvm-build/cross_toolchain_builder.py b/llvm-build/cross_toolchain_builder.py
+index 61a3ecb48b69..068b02cb3c99 100644
+--- a/llvm-build/cross_toolchain_builder.py
++++ b/llvm-build/cross_toolchain_builder.py
+@@ -174,7 +174,7 @@ class CrossToolchainBuilder:
+             )
+             lldb_defines["LibEdit_LIBRARIES"] = (
+                 self._build_utils.merge_install_dir(
+-                    "libedit", self._llvm_triple, "lib", "libedit.so.0.0.76"
++                    "libedit", self._llvm_triple, "lib", "libedit.so"
+                 )
+             )
+ 

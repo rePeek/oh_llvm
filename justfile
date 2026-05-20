@@ -8,6 +8,13 @@ build-image:
 build-x86:
     rm -rf out
     docker compose run --rm -e LLVM_PROJECT=toolchain/llvm-project ohos-llvm-builder bash -lc '\
+    PATCH_FILE="/workspace/patch/ohos-buildpy-libedit-fix.patch"; \
+    if git -C "/workspace/$LLVM_PROJECT" apply --check "$PATCH_FILE"; then \
+      git -C "/workspace/$LLVM_PROJECT" apply "$PATCH_FILE"; \
+      echo "Applied patch: $PATCH_FILE"; \
+    else \
+      echo "Patch already applied or not applicable: $PATCH_FILE"; \
+    fi; \
     python3 "$LLVM_PROJECT/llvm-build/build.py" \
       --strip \
       --build-lldb-static \
@@ -22,6 +29,16 @@ build-x86:
 
 build-ohos:    
     docker compose run --rm -e LLVM_PROJECT=toolchain/llvm-project ohos-llvm-builder bash -lc '\
+    for PATCH_FILE in \
+      /workspace/patch/ohos-libedit-fix.patch \
+      /workspace/patch/ohos-buildpy-libedit-fix.patch; do \
+      if git -C "/workspace/$LLVM_PROJECT" apply --check "$PATCH_FILE"; then \
+        git -C "/workspace/$LLVM_PROJECT" apply "$PATCH_FILE"; \
+        echo "Applied patch: $PATCH_FILE"; \
+      else \
+        echo "Patch already applied or not applicable: $PATCH_FILE"; \
+      fi; \
+    done; \
     python3 "$LLVM_PROJECT/llvm-build/build-ohos-aarch64.py" \
       --strip \
       --build-python \
