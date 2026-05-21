@@ -6,8 +6,13 @@ build-image:
     docker compose build
 
 build-x86:
-    rm -rf out
-    docker compose run --rm -e LLVM_PROJECT=toolchain/llvm-project ohos-llvm-builder bash -lc '\
+    bash -lc 'set -euo pipefail; \
+    mkdir -p log; \
+    TS=$(date +%Y%m%d-%H%M%S); \
+    LOG_FILE="log/build-x86-${TS}.log"; \
+    echo "Writing log to $LOG_FILE"; \
+    rm -rf out; \
+    docker compose run --rm -e LLVM_PROJECT=toolchain/llvm-project ohos-llvm-builder bash -lc '\'' \
     PATCH_FILE="/workspace/patch/ohos-buildpy-libedit-fix.patch"; \
     if git -C "/workspace/$LLVM_PROJECT" apply --check "$PATCH_FILE"; then \
       git -C "/workspace/$LLVM_PROJECT" apply "$PATCH_FILE"; \
@@ -25,10 +30,15 @@ build-x86:
       --compression-format gz \
       --no-strip-libs \
       --build-with-debug-info \
-      --enable-lzma-7zip'
+      --enable-lzma-7zip'\'' 2>&1 | tee "$LOG_FILE"'
 
 build-ohos:    
-    docker compose run --rm -e LLVM_PROJECT=toolchain/llvm-project ohos-llvm-builder bash -lc '\
+    bash -lc 'set -euo pipefail; \
+    mkdir -p log; \
+    TS=$(date +%Y%m%d-%H%M%S); \
+    LOG_FILE="log/build-ohos-${TS}.log"; \
+    echo "Writing log to $LOG_FILE"; \
+    docker compose run --rm -e LLVM_PROJECT=toolchain/llvm-project ohos-llvm-builder bash -lc '\'' \
     for PATCH_FILE in \
       /workspace/patch/ohos-libedit-fix.patch \
       /workspace/patch/ohos-buildpy-libedit-fix.patch; do \
@@ -46,7 +56,7 @@ build-ohos:
       --build-libedit \
       --build-libxml2 \
       --compression-format gz \
-      --enable-lzma-7zip'
+      --enable-lzma-7zip'\'' 2>&1 | tee "$LOG_FILE"'
 
 ninja-install-linux *targets:
     just ninja-install-in llvm_make {{targets}}
