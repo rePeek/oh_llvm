@@ -58,6 +58,45 @@ build-ohos:
       --compression-format gz \
       --enable-lzma-7zip'\'' 2>&1 | tee "$LOG_FILE"'
 
+lldb-ut:
+    bash -lc 'set -o pipefail; \
+    mkdir -p log; \
+    TIME=$(date +%Y%m%d-%H%M%S); \
+    LOG_FILE="log/lldb-ut-${TIME}.log"; \
+    echo "Writing log to $LOG_FILE"; \
+    docker compose run --rm ohos-llvm-builder bash -lc '\'' \
+    set +e; \
+    mkdir -p /workspace/out/ffi-compat; \
+    if [ ! -e /workspace/out/ffi-compat/libffi.so.6 ]; then \
+      ln -s /usr/lib/x86_64-linux-gnu/libffi.so.8 /workspace/out/ffi-compat/libffi.so.6; \
+    fi; \
+    export LD_LIBRARY_PATH="/workspace/out/ffi-compat:/workspace/out/llvm_make/lib:/workspace/out/llvm_make/lib/x86_64-unknown-linux-gnu:/workspace/out/third_party/libedit/install/linux-x86_64/lib"; \
+    dest_path="/workspace/out/llvm_make/tools/lldb/unittests/ScriptInterpreter"; \
+    export LLDB_COMMAND_TRACE=YES; \
+    if [ ! -d "${dest_path}/python3" ]; then \
+      ln -s "/workspace/out/llvm_make/python3" "${dest_path}"; \
+    fi; \
+    startTime=$(date +%Y%m%d-%H:%M:%S); \
+    startTime_s=$(date +%s); \
+    echo "test exec start: ${startTime}"; \
+    pushd /workspace/out/llvm_make; \
+    /workspace/prebuilts/build-tools/linux-x86/bin/ninja -v lldb-unit-test-deps lldb-shell-test-deps lldb-api-test-deps; \
+    deps=$?; \
+    ./bin/llvm-lit -sv tools/lldb/test/Unit/ --max-time 300; \
+    unit=$?; \
+    ./bin/llvm-lit -sv tools/lldb/test/Shell/ --max-time 300; \
+    shell=$?; \
+    ./bin/llvm-lit -sv tools/lldb/test/API/ --max-time 300; \
+    api=$?; \
+    popd; \
+    endTime=$(date +%Y%m%d-%H:%M:%S); \
+    endTime_s=$(date +%s); \
+    echo "test exec end: ${endTime}, elapsed $((endTime_s - startTime_s))s"; \
+    echo "result: deps=${deps}, unit=${unit}, shell=${shell}, api=${api}"; \
+    if [ "${deps}" -ne 0 ] || [ "${unit}" -ne 0 ] || [ "${shell}" -ne 0 ] || [ "${api}" -ne 0 ]; then \
+      exit 1; \
+    fi'\'' 2>&1 | tee "$LOG_FILE"'
+
 ninja-install-linux *targets:
     just ninja-install-in llvm_make {{targets}}
 

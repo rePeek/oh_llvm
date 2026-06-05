@@ -8,6 +8,10 @@ services:
     container_name: ohos-llvm-builder
     user: "${UID:-1000}:${GID:-1000}"
     working_dir: /workspace
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp=unconfined
     volumes:
       - ./:/workspace
     tty: true
