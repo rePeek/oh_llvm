@@ -13,13 +13,16 @@ build-x86:
     echo "Writing log to $LOG_FILE"; \
     rm -rf out; \
     docker compose run --rm -e LLVM_PROJECT=toolchain/llvm-project ohos-llvm-builder bash -lc '\'' \
-    PATCH_FILE="/workspace/patch/ohos-buildpy-libedit-fix.patch"; \
-    if git -C "/workspace/$LLVM_PROJECT" apply --check "$PATCH_FILE"; then \
-      git -C "/workspace/$LLVM_PROJECT" apply "$PATCH_FILE"; \
-      echo "Applied patch: $PATCH_FILE"; \
-    else \
-      echo "Patch already applied or not applicable: $PATCH_FILE"; \
-    fi; \
+    for PATCH_FILE in \
+      /workspace/patch/ohos-buildpy-libedit-fix.patch \
+      /workspace/patch/ohos-llvm-project-local-changes.patch; do \
+      if git -C "/workspace/$LLVM_PROJECT" apply --check "$PATCH_FILE"; then \
+        git -C "/workspace/$LLVM_PROJECT" apply "$PATCH_FILE"; \
+        echo "Applied patch: $PATCH_FILE"; \
+      else \
+        echo "Patch already applied or not applicable: $PATCH_FILE"; \
+      fi; \
+    done; \
     python3 "$LLVM_PROJECT/llvm-build/build.py" \
       --strip \
       --build-lldb-static \
@@ -30,6 +33,7 @@ build-x86:
       --compression-format gz \
       --no-strip-libs \
       --build-with-debug-info \
+      --parallel-link-jobs 4 \
       --enable-lzma-7zip'\'' 2>&1 | tee "$LOG_FILE"'
 
 build-ohos:    
