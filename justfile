@@ -34,15 +34,9 @@ build-x86-local:
       --build-with-debug-info \
       --enable-lzma-7zip'
 
-build-x86-debug:
-    just build-x86-lldb-debug
-
 build-x86-lldb-debug:
     docker compose run --rm -e LLVM_PROJECT=toolchain/llvm-project ohos-llvm-builder \
       bash -lc 'cd /workspace && just build-x86-lldb-debug-local'
-
-build-x86-debug-local:
-    just build-x86-lldb-debug-local
 
 build-x86-lldb-debug-local:
     bash -lc 'set -euo pipefail; \
