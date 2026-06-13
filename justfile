@@ -44,19 +44,24 @@ build-x86-local:
       --enable-lzma-7zip'
 
 build-x86-debug:
+    just build-x86-lldb-debug
+
+build-x86-lldb-debug:
     docker compose run --rm -e LLVM_PROJECT=toolchain/llvm-project ohos-llvm-builder \
-      bash -lc 'cd /workspace && just build-x86-debug-local'
+      bash -lc 'cd /workspace && just build-x86-lldb-debug-local'
 
 build-x86-debug-local:
+    just build-x86-lldb-debug-local
+
+build-x86-lldb-debug-local:
     bash -lc 'set -euo pipefail; \
     WORKSPACE="$PWD"; \
     LLVM_PROJECT="${LLVM_PROJECT:-toolchain/llvm-project}"; \
     mkdir -p log; \
     TS=$(date +%Y%m%d-%H%M%S); \
-    LOG_FILE="log/build-x86-debug-local-${TS}.log"; \
+    LOG_FILE="log/build-x86-lldb-debug-local-${TS}.log"; \
     echo "Writing log to $LOG_FILE"; \
     exec > >(tee "$LOG_FILE") 2>&1; \
-    rm -rf out; \
     for PATCH_FILE in \
       "$WORKSPACE/patch/ohos-buildpy-libedit-fix.patch"; do \
       if git -C "$WORKSPACE/$LLVM_PROJECT" apply --check "$PATCH_FILE"; then \
@@ -67,8 +72,8 @@ build-x86-debug-local:
       fi; \
     done; \
     LLVM_ROOT="$WORKSPACE/$LLVM_PROJECT/llvm"; \
-    OUT_DIR="$WORKSPACE/out/llvm_make"; \
-    INSTALL_DIR="$WORKSPACE/out/llvm-install"; \
+    OUT_DIR="$WORKSPACE/out/lldb-debug-make"; \
+    INSTALL_DIR="$WORKSPACE/out/lldb-debug-install"; \
     CLANG_DIR="$WORKSPACE/prebuilts/clang/ohos/linux-x86_64/clang-15.0.4"; \
     PYTHON_DIR="$WORKSPACE/prebuilts/python3/linux-x86/3.12.10"; \
     CMAKE_BIN="$WORKSPACE/prebuilts/cmake/linux-x86/bin/cmake"; \
