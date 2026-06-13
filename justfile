@@ -23,8 +23,7 @@ build-x86-local:
     exec > >(tee "$LOG_FILE") 2>&1; \
     rm -rf out; \
     for PATCH_FILE in \
-      "$WORKSPACE/patch/ohos-buildpy-libedit-fix.patch" \
-      "$WORKSPACE/patch/ohos-llvm-project-local-changes.patch"; do \
+      "$WORKSPACE/patch/ohos-buildpy-libedit-fix.patch"; do \
       if git -C "$WORKSPACE/$LLVM_PROJECT" apply --check "$PATCH_FILE"; then \
         git -C "$WORKSPACE/$LLVM_PROJECT" apply "$PATCH_FILE"; \
         echo "Applied patch: $PATCH_FILE"; \
@@ -42,7 +41,6 @@ build-x86-local:
       --compression-format gz \
       --no-strip-libs \
       --build-with-debug-info \
-      --parallel-link-jobs 4 \
       --enable-lzma-7zip'
 
 build-x86-debug:
@@ -60,8 +58,7 @@ build-x86-debug-local:
     exec > >(tee "$LOG_FILE") 2>&1; \
     rm -rf out; \
     for PATCH_FILE in \
-      "$WORKSPACE/patch/ohos-buildpy-libedit-fix.patch" \
-      "$WORKSPACE/patch/ohos-llvm-project-local-changes.patch"; do \
+      "$WORKSPACE/patch/ohos-buildpy-libedit-fix.patch"; do \
       if git -C "$WORKSPACE/$LLVM_PROJECT" apply --check "$PATCH_FILE"; then \
         git -C "$WORKSPACE/$LLVM_PROJECT" apply "$PATCH_FILE"; \
         echo "Applied patch: $PATCH_FILE"; \
