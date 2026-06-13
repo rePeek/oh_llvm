@@ -22,15 +22,6 @@ build-x86-local:
     echo "Writing log to $LOG_FILE"; \
     exec > >(tee "$LOG_FILE") 2>&1; \
     rm -rf out; \
-    for PATCH_FILE in \
-      "$WORKSPACE/patch/ohos-buildpy-libedit-fix.patch"; do \
-      if git -C "$WORKSPACE/$LLVM_PROJECT" apply --check "$PATCH_FILE"; then \
-        git -C "$WORKSPACE/$LLVM_PROJECT" apply "$PATCH_FILE"; \
-        echo "Applied patch: $PATCH_FILE"; \
-      else \
-        echo "Patch already applied or not applicable: $PATCH_FILE"; \
-      fi; \
-    done; \
     python3 "$WORKSPACE/$LLVM_PROJECT/llvm-build/build.py" \
       --strip \
       --build-lldb-static \
@@ -62,15 +53,6 @@ build-x86-lldb-debug-local:
     LOG_FILE="log/build-x86-lldb-debug-local-${TS}.log"; \
     echo "Writing log to $LOG_FILE"; \
     exec > >(tee "$LOG_FILE") 2>&1; \
-    for PATCH_FILE in \
-      "$WORKSPACE/patch/ohos-buildpy-libedit-fix.patch"; do \
-      if git -C "$WORKSPACE/$LLVM_PROJECT" apply --check "$PATCH_FILE"; then \
-        git -C "$WORKSPACE/$LLVM_PROJECT" apply "$PATCH_FILE"; \
-        echo "Applied patch: $PATCH_FILE"; \
-      else \
-        echo "Patch already applied or not applicable: $PATCH_FILE"; \
-      fi; \
-    done; \
     LLVM_ROOT="$WORKSPACE/$LLVM_PROJECT/llvm"; \
     OUT_DIR="$WORKSPACE/out/lldb-debug-make"; \
     INSTALL_DIR="$WORKSPACE/out/lldb-debug-install"; \
@@ -141,16 +123,6 @@ build-ohos-local:
     LOG_FILE="log/build-ohos-local-${TS}.log"; \
     echo "Writing log to $LOG_FILE"; \
     exec > >(tee "$LOG_FILE") 2>&1; \
-    for PATCH_FILE in \
-      "$WORKSPACE/patch/ohos-libedit-fix.patch" \
-      "$WORKSPACE/patch/ohos-buildpy-libedit-fix.patch"; do \
-      if git -C "$WORKSPACE/$LLVM_PROJECT" apply --check "$PATCH_FILE"; then \
-        git -C "$WORKSPACE/$LLVM_PROJECT" apply "$PATCH_FILE"; \
-        echo "Applied patch: $PATCH_FILE"; \
-      else \
-        echo "Patch already applied or not applicable: $PATCH_FILE"; \
-      fi; \
-    done; \
     python3 "$WORKSPACE/$LLVM_PROJECT/llvm-build/build-ohos-aarch64.py" \
       --strip \
       --build-python \
