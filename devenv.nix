@@ -19,6 +19,8 @@
     clang-tools
     llvm
     lldb
+    gdb
+    heaptrack
   ];
 
   env = {

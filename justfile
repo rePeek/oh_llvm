@@ -8,14 +8,20 @@ build-image:
 build-image-local:
     @echo "No local image build step is needed."
 
-build-x86:
-    docker compose run --rm -e LLVM_PROJECT=toolchain/llvm-project ohos-llvm-builder \
-      bash -lc 'cd /workspace && just build-x86-local'
+build-x86 mode='strip':
+    docker compose run --rm -e LLVM_PROJECT=toolchain/llvm-project -e BUILD_MODE='{{mode}}' ohos-llvm-builder \
+      bash -lc 'cd /workspace && just build-x86-local "$BUILD_MODE"'
 
-build-x86-local:
+build-x86-local mode='strip':
     bash -lc 'set -euo pipefail; \
     WORKSPACE="$PWD"; \
     LLVM_PROJECT="${LLVM_PROJECT:-toolchain/llvm-project}"; \
+    BUILD_MODE="{{mode}}"; \
+    case "$BUILD_MODE" in \
+      strip) BUILD_MODE_ARG="--strip" ;; \
+      debug) BUILD_MODE_ARG="--debug" ;; \
+      *) echo "Unsupported build mode: $BUILD_MODE (expected strip or debug)" >&2; exit 2 ;; \
+    esac; \
     mkdir -p log; \
     TS=$(date +%Y%m%d-%H%M%S); \
     LOG_FILE="log/build-x86-local-${TS}.log"; \
@@ -23,7 +29,7 @@ build-x86-local:
     exec > >(tee "$LOG_FILE") 2>&1; \
     rm -rf out; \
     python3 "$WORKSPACE/$LLVM_PROJECT/llvm-build/build.py" \
-      --strip \
+      "$BUILD_MODE_ARG" \
       --build-lldb-static \
       --build-ncurses \
       --build-libedit \
