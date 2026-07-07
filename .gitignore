@@ -1,8 +1,3 @@
-# Devenv
-.devenv*
-devenv.local.nix
-devenv.local.yaml
-
 # direnv
 .direnv
 
@@ -17,10 +12,9 @@ devenv.local.yaml
 
 # keep only these files/dirs
 !.envrc
-!devenv.lock
-!devenv.nix
-!devenv.yaml
 !docker-compose.yml
+!flake.lock
+!flake.nix
 !justfile
 !docker/
 !docker/**
