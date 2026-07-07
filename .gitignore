@@ -20,3 +20,5 @@
 !docker/**
 !patch/
 !patch/**
+!scripts/
+!scripts/**
