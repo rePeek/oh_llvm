@@ -12,6 +12,7 @@
 
 # keep only these files/dirs
 !.envrc
+!README.md
 !docker-compose.yml
 !flake.lock
 !flake.nix
