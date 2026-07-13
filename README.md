@@ -4,7 +4,7 @@
 
 ## 仓库内容
 
-- `flake.nix`：Nix 开发环境，提供构建依赖和工作区辅助命令。
+- `flake.nix`：Nix 开发环境，提供源码同步、prebuilts 准备、Docker 构建入口和常用开发工具。
 - `.envrc`：direnv 入口，自动加载 `nix develop` 环境。
 - `justfile`：常用构建、安装和测试命令。
 - `docker-compose.yml`：Ubuntu 22.04 容器化构建环境。
@@ -39,13 +39,15 @@ nix develop
 direnv allow
 ```
 
-开发环境会提供以下辅助命令：
+开发环境会提供以下工具和辅助命令：
 
 - `ohos-fetch-source [branch]`
 - `ohos-env-prepare`
 - `ohos-clean-out --force`
 - `ohos-clean-all --force`
 - `just`
+- `clangd`、`clang-format`、`clang-tidy`
+- `lldb`
 
 Docker 构建还需要：
 
@@ -54,7 +56,7 @@ Docker 构建还需要：
 
 ## 快速开始
 
-先准备源码，然后选择本地构建或 Docker 构建。
+先准备源码和 prebuilts，然后在 Docker 中构建。
 
 1. 进入开发环境：
 
@@ -80,34 +82,6 @@ ohos-fetch-source OpenHarmony-6.0-Release
 - `repo sync -c`
 - `repo forall -c 'git lfs pull'`
 - 在缺少核心 prebuilts 时运行 `toolchain/llvm-project/llvm-build/env_prepare.sh`
-
-### 本地构建
-
-本地构建直接使用当前 `nix develop` shell 中的工具链和依赖。
-
-构建 Linux x86_64 LLVM 工具链：
-
-```bash
-just build-x86-local
-```
-
-默认构建模式为 `strip`。调试模式：
-
-```bash
-just build-x86-local debug
-```
-
-构建 OHOS aarch64 工具链：
-
-```bash
-just build-ohos-local
-```
-
-运行 LLDB 测试：
-
-```bash
-just lldb-ut-local
-```
 
 ### Docker 构建
 
@@ -155,13 +129,9 @@ just --list
 | --- | --- |
 | `just build-image` | 构建 Ubuntu 22.04 Docker 构建镜像 |
 | <code>just build-x86 [strip&#124;debug]</code> | 在 Docker 中构建 Linux x86_64 工具链 |
-| <code>just build-x86-local [strip&#124;debug]</code> | 在当前环境中直接构建 Linux x86_64 工具链 |
 | `just build-x86-lldb-debug` | 在 Docker 中构建 Debug 版 LLDB |
-| `just build-x86-lldb-debug-local` | 在当前环境中构建 Debug 版 LLDB |
 | `just build-ohos` | 在 Docker 中构建 OHOS aarch64 工具链 |
-| `just build-ohos-local` | 在当前环境中构建 OHOS aarch64 工具链 |
 | `just lldb-ut` | 在 Docker 中运行 LLDB Unit、Shell 和 API 测试 |
-| `just lldb-ut-local` | 在当前环境中运行 LLDB 测试 |
 | `just ninja-install-linux [targets...]` | 在 `out/llvm_make` 中执行 install 或指定 Ninja target |
 | `just ninja-install-windows [targets...]` | 在 `out/windows-x86_64` 中执行 install 或指定 Ninja target |
 | `just ninja-install-ohos [targets...]` | 在 `out/ohos-aarch64` 中执行 install 或指定 Ninja target |
@@ -184,7 +154,7 @@ toolchain/llvm-project
 如果使用了不同源码布局，可以通过环境变量覆盖：
 
 ```bash
-LLVM_PROJECT=/path/to/llvm-project just build-x86-local
+LLVM_PROJECT=/path/to/llvm-project just build-x86
 ```
 
 相关脚本和命令都会优先读取 `LLVM_PROJECT`，未设置时使用默认路径。
@@ -209,5 +179,6 @@ ohos-clean-all --force
 
 - `ohos-fetch-source` 会写入 Git 用户名和邮箱配置，并执行 Git LFS 拉取。
 - Nix dev shell 首次进入时会下载 `repo` 命令到 `.nix-dev/bin/repo`。
+- Nix dev shell 不再提供完整宿主机编译依赖；默认编译路径是 Docker。`just *-local` 命令仍保留在 `justfile` 中，但需要自行准备对应编译工具链和依赖。
 - Dockerfile 使用清华 Ubuntu 镜像源，适合国内网络环境。
 - `out/`、源码树和 prebuilts 体积较大，已通过 `.gitignore` 排除。

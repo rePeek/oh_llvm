@@ -40,28 +40,20 @@
 
       mkPackages = pkgs:
         with pkgs; [
-          # compile dependencies matching docker/Dockerfile.ubuntu22
+          # Host-side source sync and prebuilt preparation. Compilation happens
+          # inside docker/Dockerfile.ubuntu22.
           bash
           cacert
-          ccache
           curl
           git
           python3
-          python3Packages.requests
-          gcc_multi
-          gnumake
-          binutils
-          swig
-          libedit
-          ncurses5
-          libabigail
-          elfutils
-          pkg-config
-          autoconf
-          autoconf-archive
-          automake
-          libtool
-          rsync
+          wget
+          unzip
+          gnutar
+          gawk
+          gnugrep
+          gnused
+          diffutils
 
           # project helper tools
           just
