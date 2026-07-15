@@ -46,8 +46,6 @@ direnv allow
 - `ohos-clean-out --force`
 - `ohos-clean-all --force`
 - `just`
-- `clangd`、`clang-format`、`clang-tidy`
-- `lldb`
 
 Docker 构建还需要：
 
@@ -177,8 +175,9 @@ ohos-clean-all --force
 
 ## 注意事项
 
+- 请从工作区根目录进入 `nix develop`；开发环境会通过 `OHOS_WORKSPACE_ROOT` 记录该目录，辅助脚本会在其中执行。
 - `ohos-fetch-source` 会写入 Git 用户名和邮箱配置，并执行 Git LFS 拉取。
-- Nix dev shell 首次进入时会下载 `repo` 命令到 `.nix-dev/bin/repo`。
+- 首次执行 `ohos-fetch-source` 时会下载 `repo` 命令到 `.nix-dev/bin/repo`。
 - Nix dev shell 不再提供完整宿主机编译依赖；默认编译路径是 Docker。`just *-local` 命令仍保留在 `justfile` 中，但需要自行准备对应编译工具链和依赖。
 - Dockerfile 使用清华 Ubuntu 镜像源，适合国内网络环境。
 - `out/`、源码树和 prebuilts 体积较大，已通过 `.gitignore` 排除。

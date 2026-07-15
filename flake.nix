@@ -15,7 +15,13 @@
       mkScripts = pkgs: [
         (pkgs.writeShellApplication {
           name = "ohos-fetch-source";
-          runtimeInputs = [ pkgs.bash pkgs.git pkgs.git-lfs ];
+          runtimeInputs = [
+            pkgs.bash
+            pkgs.coreutils
+            pkgs.curl
+            pkgs.git
+            pkgs.git-lfs
+          ];
           text = builtins.readFile ./scripts/ohos-fetch-source.sh;
         })
 
@@ -59,20 +65,10 @@
           just
           coreutils
           git-lfs
-          clang-tools
-          lldb
         ] ++ mkScripts pkgs;
 
       shellHook = ''
-        mkdir -p .nix-dev/bin
-
-        if [ ! -x .nix-dev/bin/repo ]; then
-          curl -L https://gitee.com/oschina/repo/raw/fork_flow/repo-py3 \
-            -o .nix-dev/bin/repo
-          chmod +x .nix-dev/bin/repo
-        fi
-
-        export PATH="$PWD/.nix-dev/bin:$PATH"
+        export OHOS_WORKSPACE_ROOT="$PWD"
 
         echo ""
         echo "Helper commands:"
