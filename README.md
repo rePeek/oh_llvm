@@ -81,6 +81,21 @@ ohos-fetch-source OpenHarmony-6.0-Release
 - `repo forall -c 'git lfs pull'`
 - 在缺少核心 prebuilts 时运行 `toolchain/llvm-project/llvm-build/env_prepare.sh`
 
+### Ubuntu 本地构建
+
+如果需要直接在 Ubuntu 22.04 宿主机上构建，先安装与 Docker 构建镜像相同的系统依赖：
+
+```bash
+just init_ubuntu
+```
+
+该命令会通过 `sudo apt-get` 安装依赖。完成后可直接运行本地构建命令：
+
+```bash
+just build-x86-local
+just build-ohos-local
+```
+
 ### Docker 构建
 
 Docker 构建也从 `nix develop` shell 中发起。Nix 环境负责提供 `just` 和工作区辅助命令；实际编译会进入 `docker/Dockerfile.ubuntu22` 创建的 Ubuntu 22.04 容器，并把当前仓库挂载到容器的 `/workspace`。
@@ -125,6 +140,7 @@ just --list
 
 | 命令 | 用途 |
 | --- | --- |
+| `just init_ubuntu` | 安装 Ubuntu 22.04 本地构建所需的 apt 依赖 |
 | `just build-image` | 构建 Ubuntu 22.04 Docker 构建镜像 |
 | <code>just build-x86 [strip&#124;debug]</code> | 在 Docker 中构建 Linux x86_64 工具链 |
 | `just build-x86-lldb-debug` | 在 Docker 中构建 Debug 版 LLDB |
@@ -178,6 +194,6 @@ ohos-clean-all --force
 - 请从工作区根目录进入 `nix develop`；开发环境会通过 `OHOS_WORKSPACE_ROOT` 记录该目录，辅助脚本会在其中执行。
 - `ohos-fetch-source` 会写入 Git 用户名和邮箱配置，并执行 Git LFS 拉取。
 - 首次执行 `ohos-fetch-source` 时会下载 `repo` 命令到 `.nix-dev/bin/repo`。
-- Nix dev shell 不再提供完整宿主机编译依赖；默认编译路径是 Docker。`just *-local` 命令仍保留在 `justfile` 中，但需要自行准备对应编译工具链和依赖。
+- Nix dev shell 不提供完整宿主机编译依赖；Ubuntu 22.04 可通过 `just init_ubuntu` 安装，其他系统需要自行准备对应依赖。
 - Dockerfile 使用清华 Ubuntu 镜像源，适合国内网络环境。
 - `out/`、源码树和 prebuilts 体积较大，已通过 `.gitignore` 排除。
