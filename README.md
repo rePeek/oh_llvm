@@ -83,7 +83,7 @@ ohos-fetch-source OpenHarmony-6.0-Release
 
 ### Ubuntu 本地构建
 
-如果需要直接在 Ubuntu 22.04 宿主机上构建，先安装与 Docker 构建镜像相同的系统依赖：
+如果需要直接在 Ubuntu 22.04 宿主机上构建，先安装本地编译所需的系统依赖：
 
 ```bash
 just init_ubuntu

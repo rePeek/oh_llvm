@@ -5,24 +5,13 @@ default:
 init_ubuntu:
     sudo apt-get update
     sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-      ccache \
-      python3-dev \
-      python3-requests \
       build-essential \
       swig \
-      libedit-dev \
-      libncurses5-dev \
       binutils-dev \
-      gcc-multilib \
-      abigail-tools \
       elfutils \
-      pkg-config \
       autoconf \
-      autoconf-archive \
       automake \
-      libtool \
-      libstdc++-11-dev-arm64-cross \
-      rsync
+      libtool
 
 build-image:
     docker compose build

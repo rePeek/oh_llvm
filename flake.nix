@@ -52,7 +52,7 @@
           cacert
           curl
           git
-          python3
+          (python3.withPackages (ps: [ ps.requests ]))
           wget
           unzip
           gnutar
